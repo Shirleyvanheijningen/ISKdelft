@@ -60,6 +60,13 @@
             box-shadow: 0 10px 15px -3px rgba(0, 68, 148, 0.3);
             transform: translateY(-2px);
         }
+        .secondary-button {
+            background-color: #e5e7eb;
+            color: #1f2937;
+        }
+        .secondary-button:hover {
+            background-color: #d1d5db;
+        }
         .project-card {
             background-color: white;
             border-radius: 1rem;
@@ -99,72 +106,65 @@
             padding: 2rem;
             width: 100%;
             max-width: 48rem;
+            /* Toegevoegd voor scroll functionaliteit */
+            display: flex;
+            flex-direction: column;
+            max-height: 85vh;
         }
-
-        /* --- Gemini Constellation Stijlen --- */
-        #future-screen {
-             background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+        .modal-body {
+            overflow-y: auto; /* Maakt de body scrollbaar */
+            padding-right: 1rem; /* Ruimte voor de scrollbar */
+            margin-right: -1rem;
         }
-        #future-screen .title, #future-screen .subtitle {
-            color: white;
-        }
-        #future-screen .subtitle {
-             color: #8b949e;
-        }
-        .constellation-map {
+        
+        /* Roadmap styles */
+        .roadmap-container {
             position: relative;
-            width: 100%;
-            max-width: 600px;
-            height: 400px;
-            margin: auto;
+            padding: 2rem 0;
         }
-        .constellation-map svg {
+        .roadmap-line {
             position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-        }
-        .star {
-            position: absolute;
-            background-color: #fff;
-            border-radius: 50%;
-            transition: all 0.3s ease;
-        }
-        .speerpunt-star {
-            width: 30px;
-            height: 30px;
-            box-shadow: 0 0 15px #fff, 0 0 25px #fff, 0 0 40px #0ea5e9;
-            cursor: pointer;
-        }
-        .speerpunt-star:hover {
-            transform: translate(-50%, -50%) scale(1.4);
-        }
-        .star-label {
-            position: absolute;
-            background-color: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(5px);
-            color: #fff;
-            padding: 10px 15px;
-            border-radius: 8px;
-            opacity: 0;
-            transition: all 0.3s ease;
-            pointer-events: none;
-            width: 250px;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            bottom: 150%; 
             left: 50%;
+            top: 2rem;
+            bottom: 2rem;
+            width: 4px;
+            background-color: #e5e7eb;
             transform: translateX(-50%);
         }
-        .speerpunt-star:hover .star-label {
-            opacity: 1;
-            bottom: 125%;
+        .roadmap-item {
+            position: relative;
+            display: flex;
+            margin-bottom: 2rem;
         }
-        .back-button {
-            background-color: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
+        .roadmap-item:last-child {
+            margin-bottom: 0;
         }
-        .back-button:hover {
-            background-color: rgba(255,255,255,0.2);
+        .roadmap-dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: white;
+            border: 4px solid #004494;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+        }
+        .roadmap-content {
+            width: calc(50% - 40px);
+            padding: 1rem;
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+        }
+        .roadmap-item.right .roadmap-content {
+            margin-left: auto;
+            text-align: left;
+        }
+        .roadmap-item.left .roadmap-content {
+            margin-right: auto;
+            text-align: right;
         }
     </style>
 </head>
@@ -205,27 +205,51 @@
     </div>
     
     <div id="future-screen" class="screen container hidden">
-        <div class="w-full max-w-5xl">
+        <div class="w-full max-w-4xl">
             <header class="text-center mb-12">
-                <h1 class="title text-3xl md:text-4xl">Onze Toekomst met Gemini</h1>
-                <p class="subtitle mt-2 text-base md:text-lg">De drie speerpunten voor de volgende fase.</p>
+                <h1 class="title text-3xl md:text-4xl">Onze Toekomst met AI</h1>
+                <p class="subtitle mt-2 text-base md:text-lg">Hoe we Gemini verder gaan inzetten voor beter onderwijs.</p>
             </header>
-            <div id="constellation-map" class="constellation-map">
-                <!-- Constellatie wordt hier door JS geplaatst -->
+            <div class="roadmap-container">
+                <div class="roadmap-line hidden md:block"></div>
+                <!-- Roadmap Item 1 -->
+                <div class="roadmap-item left">
+                    <div class="roadmap-content">
+                        <h3 class="title text-xl mb-1">De Koplopers: Versnellen & Innoveren</h3>
+                        <p class="subtitle text-sm">We geven de koplopers uit de pilot de ruimte om verder te innoveren. Zij vormen de voorhoede die, door te experimenteren met o.a. vibe coding, nieuwe, praktische AI-toepassingen ontwikkelt die ons onderwijs direct versterken en vernieuwen.</p>
+                    </div>
+                     <div class="roadmap-dot hidden md:block"></div>
+                </div>
+                <!-- Roadmap Item 2 -->
+                <div class="roadmap-item right">
+                     <div class="roadmap-dot hidden md:block"></div>
+                    <div class="roadmap-content">
+                        <h3 class="title text-xl mb-1">De Schoolbrede Basis: AI-Geletterdheid</h3>
+                        <p class="subtitle text-sm">Voor alle collega's lanceren we een scholingstraject gericht op AI-geletterdheid. Het doel is niet alleen efficiënter werken, maar ook dat iedereen de vaardigheden en het vertrouwen heeft om met AI ons onderwijs fundamenteel te durven hervormen.</p>
+                    </div>
+                </div>
+                <!-- Roadmap Item 3 -->
+                <div class="roadmap-item left">
+                    <div class="roadmap-content">
+                         <h3 class="title text-xl mb-1">De Leerlingen: Voorbereiden & Vormgeven</h3>
+                        <p class="subtitle text-sm">We integreren AI in de lessen, zodat leerlingen kritisch en bewust leren wanneer je het wel én niet gebruikt. Zo geven we ze niet alleen essentiële toekomstvaardigheden mee, maar stellen we ze ook in staat om hun eigen leerproces actief vorm te geven.</p>
+                    </div>
+                     <div class="roadmap-dot hidden md:block"></div>
+                </div>
             </div>
              <div class="text-center mt-12">
-                 <button id="back-button" class="action-button back-button">&larr; Terug naar overzicht</button>
+                 <button id="back-button" class="action-button secondary-button">&larr; Terug naar overzicht</button>
             </div>
         </div>
     </div>
 
     <div id="modal-container" class="modal-overlay hidden">
         <div class="modal-content">
-            <div class="flex justify-between items-center mb-4">
+            <div class="flex-shrink-0 flex justify-between items-center mb-4">
                 <h2 id="modal-title" class="title text-2xl"></h2>
                 <button id="modal-close" class="text-gray-400 hover:text-gray-600 text-3xl">&times;</button>
             </div>
-            <div class="border-t pt-4">
+            <div class="modal-body border-t pt-4">
                 <h3 class="font-semibold text-lg text-gray-800">De Winst:</h3>
                 <p id="modal-winst" class="mt-1 mb-4 text-gray-600"></p>
                 <h3 class="font-semibold text-lg text-gray-800">De Prompt:</h3>
@@ -258,17 +282,12 @@
             { id: 'praatplaten', title: 'Praatplaten bij de lessen van Zebra', winst: 'Op deze manier heb ik bij alle lessen van boek 1 en 2 snel en eenvoudig praatplaten gemaakt. Deze gebruik ik om een thema te introduceren en om leerlingen extra te laten oefenen met de woorden van het thema. Hiertoe heb ik een set van 30 generieke opdrachten gemaakt op verschillende niveaus die bij iedere themaplaat ingezet kunnen worden (NB: ik voeg zowel een voorbeeld van een praatplaat als de opdrachten toe, onder de prompt).', prompt: "Wie ben je? \nJe bent een fantastische onderwijsontwikkelaar en illustrator. Je doet voor iedere opdracht zeer goed je best, omdat je weet dat het voor de opdrachtgever ontzettend belangrijk is. Dit betekent dat je gerust even de tijd neemt om na te denken als je output daardoor beter wordt. \n\nWat ga je doen? \nJe maakt praatplaten bij de lessen en hoofdstukken van onderwijsmethodes. Deze onderwijsmethodes (of in ieder geval de woordenlijsten daarvan) zijn bijgevoegd. \n\nWelke stappen zet je? \nOpen met de vraag: Hallo! Moet ik een praatplaat maken van een woordenlijst uit Zebra of van een ander thema? \nIn het geval van Zebra: vraag van welk hoofdstuk en van welke les. Vraag vervolgens of er nog belangrijke toevoegingen zijn, zoals woorden of andere zaken die écht moeten terugkomen. In het geval van een ander thema: vraag om welk thema het gaat en of er nog specifieke woorden terug moeten komen. \nMaak een praatplaat van de woorden en houd je daarbij aan de criteria zoals hieronder beschreven. Kijk hierbij goed naar de woordenlijsten en kijk ook naar de aanvullingen zoals genoemd bij stap twee. \n\nWat is een praatplaat?\nEen praatplaat is één afbeelding waarop héél erg veel gebeurt. Dit mag overdreven lijken..." }
         ];
 
-        const futureData = [
-            { id: 'koplopers', title: 'De Koplopers: Versnellen & Innoveren', text: "We geven de koplopers uit de pilot de ruimte om verder te innoveren. Zij vormen de voorhoede die, door te experimenteren met o.a. vibe coding, nieuwe, praktische AI-toepassingen ontwikkelt die ons onderwijs direct versterken en vernieuwen." },
-            { id: 'basis', title: 'De Schoolbrede Basis: AI-Geletterdheid', text: "Voor alle collega's lanceren we een scholingstraject gericht op AI-geletterdheid. Het doel is niet alleen efficiënter werken, maar ook dat iedereen de vaardigheden en het vertrouwen heeft om met AI ons onderwijs fundamenteel te durven hervormen." },
-            { id: 'leerlingen', title: 'De Leerlingen: Voorbereiden & Vormgeven', text: "We integreren AI in de lessen, zodat leerlingen kritisch en bewust leren wanneer je het wel én niet gebruikt. Zo geven we ze niet alleen essentiële toekomstvaardigheden mee, maar stellen we ze ook in staat om hun eigen leerproces actief vorm te geven." }
-        ];
-
         function switchScreen(hideScreen, showScreen) {
             hideScreen.classList.add('fade-out');
             setTimeout(() => {
                 hideScreen.classList.add('hidden');
                 hideScreen.classList.remove('fade-out');
+                
                 showScreen.classList.remove('hidden');
                 showScreen.classList.add('fade-in');
             }, 300);
@@ -280,7 +299,14 @@
                 const card = document.createElement('div');
                 card.className = 'project-card p-6';
                 card.dataset.id = project.id;
-                card.innerHTML = `<h2 class="title text-xl mb-2 text-left">${project.title}</h2><p class="subtitle text-left flex-grow">${project.winst.substring(0, 80)}...</p><div class="text-left mt-4"><span class="action-button !p-2 !py-1 !text-sm">Bekijk details</span></div>`;
+                
+                card.innerHTML = `
+                    <h2 class="title text-xl mb-2 text-left">${project.title}</h2>
+                    <p class="subtitle text-left flex-grow">${project.winst.substring(0, 80)}...</p>
+                    <div class="text-left mt-4">
+                        <span class="action-button !p-2 !py-1 !text-sm">Bekijk details</span>
+                    </div>
+                `;
                 projectsGrid.appendChild(card);
             });
         }
@@ -288,9 +314,11 @@
         function openModal(projectId) {
             const project = projectData.find(p => p.id === projectId);
             if (!project) return;
+            
             modalTitle.textContent = project.title;
             modalWinst.textContent = project.winst;
             modalPrompt.textContent = project.prompt;
+            
             modalContainer.classList.remove('hidden');
         }
 
@@ -298,58 +326,6 @@
             modalContainer.classList.add('hidden');
         }
 
-        function renderConstellation() {
-            const container = document.getElementById('constellation-map');
-            container.innerHTML = ''; 
-            
-            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            svg.setAttribute('viewBox', '0 0 600 400');
-            
-            const stars = {
-                s1: { x: 150, y: 100 }, s2: { x: 160, y: 180 }, s3: { x: 130, y: 280 }, s4: { x: 190, y: 280 },
-                s5: { x: 450, y: 100 }, s6: { x: 440, y: 180 }, s7: { x: 470, y: 280 }, s8: { x: 410, y: 280 },
-            };
-
-            const lines = [['s1', 's2'], ['s2', 's3'], ['s2', 's4'], ['s5', 's6'], ['s6', 's7'], ['s6', 's8']];
-
-            lines.forEach(linePair => {
-                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                line.setAttribute('x1', stars[linePair[0]].x);
-                line.setAttribute('y1', stars[linePair[0]].y);
-                line.setAttribute('x2', stars[linePair[1]].x);
-                line.setAttribute('y2', stars[linePair[1]].y);
-                line.setAttribute('stroke', 'rgba(255, 255, 255, 0.2)');
-                line.setAttribute('stroke-width', '2');
-                svg.appendChild(line);
-            });
-            container.appendChild(svg);
-
-            Object.values(stars).forEach(starPos => {
-                const starDiv = document.createElement('div');
-                starDiv.className = 'star';
-                starDiv.style.width = '8px';
-                starDiv.style.height = '8px';
-                starDiv.style.boxShadow = '0 0 5px #fff';
-                starDiv.style.left = `${(starPos.x / 600) * 100}%`;
-                starDiv.style.top = `${(starPos.y / 400) * 100}%`;
-                starDiv.style.transform = `translate(-50%, -50%)`;
-                container.appendChild(starDiv);
-            });
-
-            const spearheadCoords = [stars.s1, stars.s5, stars.s2];
-            futureData.forEach((data, i) => {
-                const starDiv = document.createElement('div');
-                starDiv.className = 'star speerpunt-star';
-                starDiv.style.left = `${(spearheadCoords[i].x / 600) * 100}%`;
-                starDiv.style.top = `${(spearheadCoords[i].y / 400) * 100}%`;
-                starDiv.style.transform = `translate(-50%, -50%)`;
-                starDiv.innerHTML = `<div class="star-label"><b>${data.title}</b><p class="text-xs mt-1">${data.text}</p></div>`;
-                container.appendChild(starDiv);
-            });
-        }
-
-
-        // --- EVENT LISTENERS ---
         startButton.addEventListener('click', () => switchScreen(startScreen, overviewScreen));
         futureButton.addEventListener('click', () => switchScreen(overviewScreen, futureScreen));
         backButton.addEventListener('click', () => switchScreen(futureScreen, overviewScreen));
@@ -368,9 +344,7 @@
             }
         });
 
-        // --- INIT ---
         renderProjects();
-        renderConstellation();
     </script>
 </body>
 </html>
