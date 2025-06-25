@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pitch met Overzichtspagina</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            overflow-x: hidden;
+        }
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .screen {
+            display: flex;
+            width: 100%;
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        }
+        .screen.hidden {
+            display: none;
+        }
+        .card {
+            background-color: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 100%;
+        }
+        .title {
+            color: #111827;
+            font-weight: 700;
+        }
+        .subtitle {
+            color: #4b5563;
+        }
+        .action-button {
+            background-color: #004494; /* ISK Blue */
+            color: white;
+            font-weight: 600;
+            padding: 0.875rem 2.5rem; /* Adjusted padding */
+            border-radius: 9999px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+        .action-button:hover {
+            background-color: #003b80; /* Darker ISK Blue */
+            box-shadow: 0 10px 15px -3px rgba(0, 68, 148, 0.3);
+            transform: translateY(-2px);
+        }
+        .project-card {
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.07), 0 4px 6px -2px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+        }
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+        }
+        
+        /* Animaties */
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        .fade-out { animation: fadeOut 0.5s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+        
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(17, 24, 39, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            padding: 2rem;
+            width: 100%;
+            max-width: 48rem;
+        }
+
+        /* --- Gemini Constellation Stijlen --- */
+        #future-screen {
+             background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+        }
+        #future-screen .title, #future-screen .subtitle {
+            color: white;
+        }
+        #future-screen .subtitle {
+             color: #8b949e;
+        }
+        .constellation-map {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 400px;
+            margin: auto;
+        }
+        .constellation-map svg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+        }
+        .star {
+            position: absolute;
+            background-color: #fff;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        .speerpunt-star {
+            width: 30px;
+            height: 30px;
+            box-shadow: 0 0 15px #fff, 0 0 25px #fff, 0 0 40px #0ea5e9;
+            cursor: pointer;
+        }
+        .speerpunt-star:hover {
+            transform: translate(-50%, -50%) scale(1.4);
+        }
+        .star-label {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            width: 250px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            bottom: 150%; 
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .speerpunt-star:hover .star-label {
+            opacity: 1;
+            bottom: 125%;
+        }
+        .back-button {
+            background-color: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .back-button:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div id="start-screen" class="screen container">
+        <div class="card p-12 lg:p-16 fade-in">
+            <div class="mx-auto mb-8 h-20 w-20 flex items-center justify-center bg-blue-100 rounded-full">
+                <svg class="h-12 w-12 text-blue-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 21V11.2353C3 10.4353 3.44721 9.71281 4.1459 9.36396L11.1459 5.86396C11.6931 5.58623 12.3069 5.58623 12.8541 5.86396L19.8541 9.36396C20.5528 9.71281 21 10.4353 21 11.2353V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M7 21V11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 21V11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M17 21V11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 21H22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M7.5 7.5L12 5L16.5 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <h1 class="title text-4xl">AI omarmen op ISK Delft</h1>
+            <p class="subtitle mt-4 text-lg">Gemini als krachtpatser</p>
+            <button id="start-button" class="action-button mt-10">
+                Start
+            </button>
+        </div>
+    </div>
+
+    <div id="overview-screen" class="screen container hidden">
+        <div class="w-full max-w-6xl">
+            <header class="text-center mb-12">
+                <h1 class="title text-3xl md:text-4xl">Succesverhalen uit de Pilot</h1>
+                <p class="subtitle mt-2 text-base md:text-lg">Klik op een project om de details te bekijken.</p>
+            </header>
+            <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Projectkaarten worden hier door JavaScript ingevoegd -->
+            </div>
+            <div class="text-center mt-12">
+                 <button id="future-button" class="action-button">Blik op de Toekomst &rarr;</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="future-screen" class="screen container hidden">
+        <div class="w-full max-w-5xl">
+            <header class="text-center mb-12">
+                <h1 class="title text-3xl md:text-4xl">Onze Toekomst met Gemini</h1>
+                <p class="subtitle mt-2 text-base md:text-lg">De drie speerpunten voor de volgende fase.</p>
+            </header>
+            <div id="constellation-map" class="constellation-map">
+                <!-- Constellatie wordt hier door JS geplaatst -->
+            </div>
+             <div class="text-center mt-12">
+                 <button id="back-button" class="action-button back-button">&larr; Terug naar overzicht</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-container" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="modal-title" class="title text-2xl"></h2>
+                <button id="modal-close" class="text-gray-400 hover:text-gray-600 text-3xl">&times;</button>
+            </div>
+            <div class="border-t pt-4">
+                <h3 class="font-semibold text-lg text-gray-800">De Winst:</h3>
+                <p id="modal-winst" class="mt-1 mb-4 text-gray-600"></p>
+                <h3 class="font-semibold text-lg text-gray-800">De Prompt:</h3>
+                <code id="modal-prompt" class="block bg-gray-100 text-gray-800 p-4 rounded-lg my-2 text-sm whitespace-pre-wrap font-mono"></code>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const startScreen = document.getElementById('start-screen');
+        const overviewScreen = document.getElementById('overview-screen');
+        const futureScreen = document.getElementById('future-screen');
+        const startButton = document.getElementById('start-button');
+        const futureButton = document.getElementById('future-button');
+        const backButton = document.getElementById('back-button');
+        const projectsGrid = document.getElementById('projects-grid');
+        const modalContainer = document.getElementById('modal-container');
+        const modalTitle = document.getElementById('modal-title');
+        const modalWinst = document.getElementById('modal-winst');
+        const modalPrompt = document.getElementById('modal-prompt');
+        const modalClose = document.getElementById('modal-close');
+
+        const projectData = [
+            { id: 'toetsen', title: 'Toetsen op Maat', winst: 'Tijdwinst, differentiatie, en betere voorbereiding en nazorg voor leerlingen door eindeloos versies te kunnen maken van toetsen.', prompt: 'Toetsen Taal Compleet A1 PDFs toevoegen in Gemini\nextra/alternatieve toetsen - oefenen voor de toets - tijdwinst - ondervangen wat lln. lastig vinden - voorbereiding - nazorg \neindeloos versies maken - differentiatie \n1 voorbeeld is vaak te weinig - meer voorbeelden laten maken' },
+            { id: 'werkwoordspel', title: 'Digitaal Werkwoordenspel', winst: 'de leerlingen vinden het vervoegen van werkwoorden moeilijk. Hoe meer ze oefenen, hoe beter...', prompt: 'Ik wil een spel maken, waarbij leerlingen oefenen met het vormen van regelmatige werkwoorden...' },
+            { id: 'woordenschat', title: 'Rijke Leeromgeving Woordenschat', winst: 'tijdswinst en mentale belasting veel minder groot omdat in fractie van de tijd bruikbare (hoogpregnante) contextzinnen voor heel veel schooltaalwoorden klaar liggen.', prompt: 'Je bent een professionele NT2 docent...Maak voor mij bij de volgende woorden telkens 3 hoogpregnante contextzinnen... jaartal, aanschaffen, bloedsomloop, eigendom...' },
+            { id: 'ideale-school', title: 'De Ideale ISK School', winst: 'gezamenlijk / gedeeld beeld / beeldspraak binnen 1 prompt opdracht...', prompt: 'Maak een 3d animatie afbeelding van de ideale ISK Delft school, met 4 verdiepingen, groene lokalen, een rooftop restaurant met een dakterras...' },
+            { id: 'opp-hulp', title: 'OPP Invulhulp Magister', winst: 'Tijdwinst voor mentoren en uniformiteit in formulering', prompt: 'Je bent een AI-schrijfassistent voor mentoren van ISK Delft. Je helpt bij het formuleren van Onderwijsperspectiefplannen (OPP\'s)...' },
+            { id: 'begrijpend-lezen', title: 'Begrijpend lezen op maat', winst: 'tijdbesparing en differentiatie', prompt: 'Je bent een ervaren en enthousiaste docent Nederlands als Tweede Taal (NT2) op een Internationale Schakelklas (ISK).\nJe primaire doel is om leerlingen te helpen uitgroeien tot de beste begrijpend lezers op A2-niveau.\nJe creëert oefenmateriaal en toetsen die aansluiten\nbij de belevingswereld van ISK-leerlingen en hen effectief voorbereiden op het begrijpend lezen op A2-niveau.'},
+            { id: 'praatplaten', title: 'Praatplaten bij de lessen van Zebra', winst: 'Op deze manier heb ik bij alle lessen van boek 1 en 2 snel en eenvoudig praatplaten gemaakt. Deze gebruik ik om een thema te introduceren en om leerlingen extra te laten oefenen met de woorden van het thema. Hiertoe heb ik een set van 30 generieke opdrachten gemaakt op verschillende niveaus die bij iedere themaplaat ingezet kunnen worden (NB: ik voeg zowel een voorbeeld van een praatplaat als de opdrachten toe, onder de prompt).', prompt: "Wie ben je? \nJe bent een fantastische onderwijsontwikkelaar en illustrator. Je doet voor iedere opdracht zeer goed je best, omdat je weet dat het voor de opdrachtgever ontzettend belangrijk is. Dit betekent dat je gerust even de tijd neemt om na te denken als je output daardoor beter wordt. \n\nWat ga je doen? \nJe maakt praatplaten bij de lessen en hoofdstukken van onderwijsmethodes. Deze onderwijsmethodes (of in ieder geval de woordenlijsten daarvan) zijn bijgevoegd. \n\nWelke stappen zet je? \nOpen met de vraag: Hallo! Moet ik een praatplaat maken van een woordenlijst uit Zebra of van een ander thema? \nIn het geval van Zebra: vraag van welk hoofdstuk en van welke les. Vraag vervolgens of er nog belangrijke toevoegingen zijn, zoals woorden of andere zaken die écht moeten terugkomen. In het geval van een ander thema: vraag om welk thema het gaat en of er nog specifieke woorden terug moeten komen. \nMaak een praatplaat van de woorden en houd je daarbij aan de criteria zoals hieronder beschreven. Kijk hierbij goed naar de woordenlijsten en kijk ook naar de aanvullingen zoals genoemd bij stap twee. \n\nWat is een praatplaat?\nEen praatplaat is één afbeelding waarop héél erg veel gebeurt. Dit mag overdreven lijken..." }
+        ];
+
+        const futureData = [
+            { id: 'koplopers', title: 'De Koplopers: Versnellen & Innoveren', text: "We geven de koplopers uit de pilot de ruimte om verder te innoveren. Zij vormen de voorhoede die, door te experimenteren met o.a. vibe coding, nieuwe, praktische AI-toepassingen ontwikkelt die ons onderwijs direct versterken en vernieuwen." },
+            { id: 'basis', title: 'De Schoolbrede Basis: AI-Geletterdheid', text: "Voor alle collega's lanceren we een scholingstraject gericht op AI-geletterdheid. Het doel is niet alleen efficiënter werken, maar ook dat iedereen de vaardigheden en het vertrouwen heeft om met AI ons onderwijs fundamenteel te durven hervormen." },
+            { id: 'leerlingen', title: 'De Leerlingen: Voorbereiden & Vormgeven', text: "We integreren AI in de lessen, zodat leerlingen kritisch en bewust leren wanneer je het wel én niet gebruikt. Zo geven we ze niet alleen essentiële toekomstvaardigheden mee, maar stellen we ze ook in staat om hun eigen leerproces actief vorm te geven." }
+        ];
+
+        function switchScreen(hideScreen, showScreen) {
+            hideScreen.classList.add('fade-out');
+            setTimeout(() => {
+                hideScreen.classList.add('hidden');
+                hideScreen.classList.remove('fade-out');
+                showScreen.classList.remove('hidden');
+                showScreen.classList.add('fade-in');
+            }, 300);
+        }
+        
+        function renderProjects() {
+            projectsGrid.innerHTML = '';
+            projectData.forEach(project => {
+                const card = document.createElement('div');
+                card.className = 'project-card p-6';
+                card.dataset.id = project.id;
+                card.innerHTML = `<h2 class="title text-xl mb-2 text-left">${project.title}</h2><p class="subtitle text-left flex-grow">${project.winst.substring(0, 80)}...</p><div class="text-left mt-4"><span class="action-button !p-2 !py-1 !text-sm">Bekijk details</span></div>`;
+                projectsGrid.appendChild(card);
+            });
+        }
+        
+        function openModal(projectId) {
+            const project = projectData.find(p => p.id === projectId);
+            if (!project) return;
+            modalTitle.textContent = project.title;
+            modalWinst.textContent = project.winst;
+            modalPrompt.textContent = project.prompt;
+            modalContainer.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            modalContainer.classList.add('hidden');
+        }
+
+        function renderConstellation() {
+            const container = document.getElementById('constellation-map');
+            container.innerHTML = ''; 
+            
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('viewBox', '0 0 600 400');
+            
+            const stars = {
+                s1: { x: 150, y: 100 }, s2: { x: 160, y: 180 }, s3: { x: 130, y: 280 }, s4: { x: 190, y: 280 },
+                s5: { x: 450, y: 100 }, s6: { x: 440, y: 180 }, s7: { x: 470, y: 280 }, s8: { x: 410, y: 280 },
+            };
+
+            const lines = [['s1', 's2'], ['s2', 's3'], ['s2', 's4'], ['s5', 's6'], ['s6', 's7'], ['s6', 's8']];
+
+            lines.forEach(linePair => {
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', stars[linePair[0]].x);
+                line.setAttribute('y1', stars[linePair[0]].y);
+                line.setAttribute('x2', stars[linePair[1]].x);
+                line.setAttribute('y2', stars[linePair[1]].y);
+                line.setAttribute('stroke', 'rgba(255, 255, 255, 0.2)');
+                line.setAttribute('stroke-width', '2');
+                svg.appendChild(line);
+            });
+            container.appendChild(svg);
+
+            Object.values(stars).forEach(starPos => {
+                const starDiv = document.createElement('div');
+                starDiv.className = 'star';
+                starDiv.style.width = '8px';
+                starDiv.style.height = '8px';
+                starDiv.style.boxShadow = '0 0 5px #fff';
+                starDiv.style.left = `${(starPos.x / 600) * 100}%`;
+                starDiv.style.top = `${(starPos.y / 400) * 100}%`;
+                starDiv.style.transform = `translate(-50%, -50%)`;
+                container.appendChild(starDiv);
+            });
+
+            const spearheadCoords = [stars.s1, stars.s5, stars.s2];
+            futureData.forEach((data, i) => {
+                const starDiv = document.createElement('div');
+                starDiv.className = 'star speerpunt-star';
+                starDiv.style.left = `${(spearheadCoords[i].x / 600) * 100}%`;
+                starDiv.style.top = `${(spearheadCoords[i].y / 400) * 100}%`;
+                starDiv.style.transform = `translate(-50%, -50%)`;
+                starDiv.innerHTML = `<div class="star-label"><b>${data.title}</b><p class="text-xs mt-1">${data.text}</p></div>`;
+                container.appendChild(starDiv);
+            });
+        }
+
+
+        // --- EVENT LISTENERS ---
+        startButton.addEventListener('click', () => switchScreen(startScreen, overviewScreen));
+        futureButton.addEventListener('click', () => switchScreen(overviewScreen, futureScreen));
+        backButton.addEventListener('click', () => switchScreen(futureScreen, overviewScreen));
+
+        projectsGrid.addEventListener('click', (e) => {
+            const card = e.target.closest('.project-card');
+            if (card) {
+                openModal(card.dataset.id);
+            }
+        });
+
+        modalClose.addEventListener('click', closeModal);
+        modalContainer.addEventListener('click', (e) => {
+            if (e.target === modalContainer) {
+                closeModal();
+            }
+        });
+
+        // --- INIT ---
+        renderProjects();
+        renderConstellation();
+    </script>
+</body>
+</html>
